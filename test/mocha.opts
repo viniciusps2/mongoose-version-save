@@ -1,0 +1,3 @@
+-r ./lib/db
+-r ./test/helpers
+-r co-mocha

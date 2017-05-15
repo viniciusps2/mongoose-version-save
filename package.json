@@ -1,0 +1,21 @@
+{
+  "name": "mongoose-save-safe-version",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "mongoose": "^4.9.9"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "co-mocha": "^1.2.0",
+    "mocha": "^3.3.0"
+  }
+}
