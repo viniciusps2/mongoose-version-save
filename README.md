@@ -27,6 +27,7 @@ const ParentSchema = Schema({
 
 ParentSchema.plugin(VersionSavePlugin)
 
-module.exports = mongoose.model('Parent', ParentSchema)
-
+const Parent = mongoose.model('Parent', ParentSchema)
 ```
+
+And then create, delete, update, when someone else edit the document, it throws an error!
