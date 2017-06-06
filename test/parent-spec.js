@@ -1,29 +1,21 @@
-const Parent = require('../lib/parent')
-// const Child = require('../lib/child')
+const Parent = require('./parent')
 
 describe('parent-child', () => {
   beforeEach(function * () {
     yield Parent.remove()
   })
 
-  it('should save', function * () {
+  it('should not throw when save without changes', function * () {
     yield Parent.create({message: 'kkk', children: [{name: 'lll'}, {name: 'jjj'}]})
     const parent = yield Parent.findOne()
-    const [child] = parent.children
-    child.name = 'bbb'
-    // child.status.statusType = 'st1'
     yield parent.save()
     const parentSaved = yield Parent.findOne()
 
-    console.log('parentSaved', JSON.stringify(parentSaved.toObject(), null, 2))
-    console.log('parentSaved', JSON.stringify(parentSaved.toJSON(), null, 2))
-    console.log(' parentSaved.children[0].toJSON()',parentSaved.children[0].toJSON())
-    expect(parentSaved.children[0].name).to.be.eq('bbb')
+    expect(parentSaved.children[0].name).to.be.eq('lll')
   })
 
-  it('should not save when someone edited', function * () {
+  it('should not save when someone edited one child', function * () {
     yield Parent.create({message: 'kkk', children: [{name: 'lll'}, {name: 'jjj'}]})
-    console.log('--')
     const parent = yield Parent.findOne()
     const parent2 = yield Parent.findOne()
     const [child] = parent.children
@@ -36,28 +28,33 @@ describe('parent-child', () => {
     yield expect(parent2.save()).to.eventually.rejectedWith(Error)
   })
 
-  it.only('should safe save', function * () {
+  it('should not save when someone edited parent', function * () {
     yield Parent.create({message: 'kkk', children: [{name: 'lll'}, {name: 'jjj'}]})
-    console.log('--')
     const parent = yield Parent.findOne()
+    const parent2 = yield Parent.findOne()
+
+    parent.message = 'bbb'
+    console.log(' parent.lastVersion',parent.lastVersion)
+    yield parent.save()
+
+    parent2.message = 'ccc'
+    yield expect(parent2.save()).to.eventually.rejectedWith(Error)
+  })
+
+  it('when someone edit item 1, and other edit item 2, should save', function * () {
+    yield Parent.create({message: 'kkk', children: [{name: 'lll'}, {name: 'jjj'}]})
+    const parent = yield Parent.findOne()
+    const parent2 = yield Parent.findOne()
 
     parent.children[0].name = 'bbb'
-    parent.children[1].name = 'ccc'
+    parent2.children[1].name = 'ccc'
+    parent2.message = 'okkk1'
 
-    // yield parent.save()
-    yield parent.safeSave()
-
-    // yield parent.saveChildsHistory()
-
-    // const parent2 = yield Parent.findOne()
-    // parent2.children[0].name = 'BBB'
-    // yield parent2.saveChidren()
-
+    yield parent.save()
+    yield parent2.save()
 
     const parentSaved = yield Parent.findOne()
-    console.log(' parentSaved',parentSaved)
-    // expect(parentSaved.children[0].name).to.be.eq('bbb')
-    // expect(parentSaved.children[1].name).to.be.eq('ccc')
-    // yield expect(parent2.save()).to.eventually.rejectedWith(Error)
+    expect(parentSaved.children[0].name).to.be.eq('bbb')
+    expect(parentSaved.children[1].name).to.be.eq('ccc')
   })
 })
